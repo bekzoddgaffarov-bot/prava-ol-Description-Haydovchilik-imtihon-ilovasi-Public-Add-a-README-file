@@ -1,3 +1,26 @@
 <!DOCTYPE html>
-<html lang="uz"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Prava-ol</title></head>
-<body><h1>Yuklanmoqda...</h1></body></html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<meta name="theme-color" content="#0f1724"/>
+<title>Prava-ol</title>
+<link rel="manifest" href="manifest.json"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0f1724;color:#fff;font-family:sans-serif;height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;}
+.icon{font-size:80px;animation:p 2s infinite;}
+@keyframes p{50%{transform:scale(1.1);}}
+h1{font-size:32px;font-weight:900;}
+p{color:#8896b3;}
+</style>
+</head>
+<body>
+<div class="icon">🚦</div>
+<h1>Prava-ol</h1>
+<p>Ilova yuklanmoqda...</p>
+<script>
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
