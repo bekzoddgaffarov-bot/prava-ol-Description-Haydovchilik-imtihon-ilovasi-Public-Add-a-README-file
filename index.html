@@ -1,1 +1,392 @@
-<!DOCTYPE html><html lang="uz"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/><meta name="theme-color" content="#0f1724"/><title>Prava-ol 🚦</title><link rel="manifest" href="manifest.json"/></head><body style="margin:0;background:#0f1724;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px"><div style="font-size:80px">🚦</div><h1 style="font-size:32px">Prava-ol</h1><p style="color:#8896b3">Ilova yuklanmoqda...</p><script>if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js')</script></body></html>
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#0f1724"/>
+<title>Prava-ol</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#0f1724;--s:#1a2332;--s2:#222f45;--blue:#2979ff;--green:#00e676;--red:#ff5252;--yellow:#ffd740;--text:#e8eaf6;--muted:#8896b3;--r:16px;}
+html,body{height:100%;background:var(--bg);font-family:sans-serif;color:var(--text);overflow:hidden;}
+#app{height:100%;display:flex;flex-direction:column;}
+.screen{display:none;flex-direction:column;height:100%;}
+.screen.active{display:flex;}
+#splash{align-items:center;justify-content:center;background:linear-gradient(145deg,#0f1724,#1a2a4a);}
+.splash-icon{font-size:90px;animation:pulse 2s infinite;}
+@keyframes pulse{50%{transform:scale(1.08);}}
+.splash-title{font-size:38px;font-weight:900;margin-top:16px;}
+.splash-sub{color:var(--muted);margin-top:8px;}
+#lang-screen{align-items:center;justify-content:center;padding:30px;}
+.lang-btn{width:100%;max-width:320px;padding:18px;background:var(--s);border:2px solid var(--s2);border-radius:var(--r);margin:8px 0;font-size:18px;font-weight:700;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:14px;}
+.lang-btn:active{border-color:var(--blue);}
+#main-screen{flex:1;overflow:hidden;}
+#main-screen .screen{overflow-y:auto;}
+.bottom-nav{display:flex;background:var(--s);border-top:1px solid var(--s2);}
+.nav-btn{flex:1;padding:10px 0 12px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--muted);font-size:11px;font-weight:700;border:none;background:none;}
+.nav-btn.active{color:var(--blue);}
+.nav-icon{font-size:22px;}
+#home{padding:16px;overflow-y:auto;}
+.home-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.home-greeting{font-size:22px;font-weight:900;}
+.streak{background:var(--s);border-radius:20px;padding:8px 14px;font-size:13px;font-weight:700;}
+.stat-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.stat-card{background:var(--s);border-radius:var(--r);padding:18px;}
+.stat-card.blue{background:linear-gradient(135deg,#1a3a6e,#1f4e99);}
+.stat-card.green{background:linear-gradient(135deg,#0d3d2b,#1a6644);}
+.stat-num{font-size:28px;font-weight:900;}
+.stat-label{font-size:12px;color:var(--muted);}
+.section-title{font-size:16px;font-weight:800;margin:8px 0;}
+.quick-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.quick-btn{background:var(--s);border-radius:var(--r);padding:18px 14px;display:flex;flex-direction:column;gap:8px;cursor:pointer;border:none;color:var(--text);text-align:left;}
+.quick-btn:active{transform:scale(0.97);}
+.quick-btn.accent{background:linear-gradient(135deg,var(--blue),#448aff);}
+.quick-btn-icon{font-size:28px;}
+.quick-btn-title{font-size:14px;font-weight:800;}
+.quick-btn-sub{font-size:11px;color:var(--muted);}
+.recent-item{background:var(--s);border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.score-pass{background:#0d3d2b;color:var(--green);padding:4px 12px;border-radius:20px;font-size:13px;font-weight:800;}
+.score-fail{background:#3d1a1a;color:var(--red);padding:4px 12px;border-radius:20px;font-size:13px;font-weight:800;}
+#tickets{padding:16px;overflow-y:auto;}
+.tickets-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.ticket-cell{aspect-ratio:1;background:var(--s);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;cursor:pointer;border:2px solid transparent;}
+.ticket-cell:active{transform:scale(0.93);}
+.ticket-cell.done{background:#0d3d2b;color:var(--green);border-color:#1a6644;}
+.ticket-cell.failed{background:#3d1a1a;color:var(--red);}
+#question-screen{flex:1;}
+.q-header{padding:16px;background:var(--s);display:flex;align-items:center;gap:12px;}
+.q-back{background:none;border:none;color:var(--text);font-size:22px;cursor:pointer;}
+.q-info{flex:1;}
+.q-title{font-size:15px;font-weight:800;}
+.q-sub{font-size:12px;color:var(--muted);}
+.q-progress-bar{height:4px;background:var(--s2);}
+.q-progress-fill{height:100%;background:var(--blue);transition:.3s;}
+.q-body{flex:1;padding:16px;overflow-y:auto;}
+.q-img{background:var(--s);border-radius:var(--r);height:140px;display:flex;align-items:center;justify-content:center;font-size:50px;margin-bottom:16px;}
+.q-text{font-size:16px;font-weight:700;line-height:1.5;margin-bottom:20px;}
+.answer-btn{width:100%;background:var(--s);border:2px solid var(--s2);border-radius:var(--r);padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:10px;text-align:left;}
+.answer-letter{width:32px;height:32px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;}
+.answer-text{font-size:14px;font-weight:600;color:var(--text);line-height:1.4;}
+.answer-btn.correct{border-color:var(--green);background:#0d3d2b;}
+.answer-btn.correct .answer-letter{background:var(--green);color:#000;}
+.answer-btn.wrong{border-color:var(--red);background:#3d1a1a;}
+.answer-btn.wrong .answer-letter{background:var(--red);color:#fff;}
+.explanation-box{background:var(--s);border-left:4px solid var(--yellow);padding:14px;margin-top:12px;font-size:13px;line-height:1.6;color:#ccc;border-radius:0 8px 8px 0;}
+.q-footer{padding:14px;background:var(--s);}
+.next-btn{width:100%;padding:15px;background:var(--blue);border:none;border-radius:var(--r);font-size:16px;font-weight:800;color:#fff;cursor:pointer;}
+#result-screen{align-items:center;justify-content:center;padding:30px;text-align:center;overflow-y:auto;}
+.result-icon{font-size:80px;margin-bottom:20px;}
+.result-title{font-size:26px;font-weight:900;margin-bottom:8px;}
+.result-sub{font-size:15px;color:var(--muted);margin-bottom:24px;}
+.result-stats{background:var(--s);border-radius:var(--r);padding:20px;width:100%;max-width:320px;margin-bottom:20px;}
+.result-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--s2);}
+.result-row:last-child{border:none;}
+.result-row-label{color:var(--muted);font-size:14px;}
+.result-row-val{font-size:14px;font-weight:800;}
+.btn-primary{width:100%;max-width:320px;padding:15px;background:var(--blue);border:none;border-radius:var(--r);font-size:16px;font-weight:800;color:#fff;cursor:pointer;margin-bottom:10px;}
+.btn-secondary{width:100%;max-width:320px;padding:15px;background:var(--s);border:none;border-radius:var(--r);font-size:16px;font-weight:800;color:var(--text);cursor:pointer;}
+#profile-screen{padding:16px;overflow-y:auto;}
+.profile-header{text-align:center;padding:20px 0;}
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:var(--blue);font-size:36px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
+.profile-name{font-size:20px;font-weight:900;}
+.pstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0;}
+.pstat{background:var(--s);border-radius:12px;padding:14px;text-align:center;}
+.pstat-num{font-size:22px;font-weight:900;}
+.pstat-label{font-size:10px;color:var(--muted);}
+.menu-item{background:var(--s);border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;margin-bottom:8px;}
+.menu-item-text{font-size:15px;font-weight:700;flex:1;}
+.lang-tag{background:var(--s2);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;}
+.exam-timer{background:var(--s);border-radius:20px;padding:6px 14px;font-size:14px;font-weight:800;color:var(--yellow);}
+.exam-timer.urgent{color:var(--red);animation:blink 1s infinite;}
+@keyframes blink{50%{opacity:.5;}}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="screen active" id="splash">
+  <div class="splash-icon">🚦</div>
+  <div class="splash-title">Prava-ol</div>
+  <div class="splash-sub">Imtihonga biz bilan tayyorlaning</div>
+</div>
+<div class="screen" id="lang-screen">
+  <div style="font-size:24px;font-weight:800;margin-bottom:30px;text-align:center">🌐 Tilni tanlang</div>
+  <button class="lang-btn" onclick="setLang('uz')"><span style="font-size:28px">🇺🇿</span> O'zbek tili</button>
+  <button class="lang-btn" onclick="setLang('ru')"><span style="font-size:28px">🇷🇺</span> Русский язык</button>
+  <button class="lang-btn" onclick="setLang('en')"><span style="font-size:28px">🇬🇧</span> English</button>
+</div>
+<div class="screen" id="main-screen" style="flex:1;overflow:hidden;display:none;flex-direction:column;">
+  <div class="screen active" id="home">
+    <div class="home-header"><div class="home-greeting" id="greeting">Salom! 👋</div><div class="streak">🔥 <span id="streak">0</span></div></div>
+    <div class="stat-cards">
+      <div class="stat-card blue"><div class="stat-num" id="total-n">0</div><div class="stat-label">Imtihonlar</div></div>
+      <div class="stat-card green"><div class="stat-num" id="best-n">0%</div><div class="stat-label">Eng yaxshi</div></div>
+    </div>
+    <div class="section-title">Rejim tanlang</div>
+    <div class="quick-btns">
+      <button class="quick-btn accent" onclick="startExam()"><div class="quick-btn-icon">📝</div><div class="quick-btn-title">Imtihon</div><div class="quick-btn-sub">20 savol·20 daq</div></button>
+      <button class="quick-btn" onclick="showIn('tickets')"><div class="quick-btn-icon">🎫</div><div class="quick-btn-title">Biletlar</div><div class="quick-btn-sub">124 ta bilet</div></button>
+      <button class="quick-btn" onclick="startPractice()"><div class="quick-btn-icon">📚</div><div class="quick-btn-title">Mashq</div><div class="quick-btn-sub">Barcha savollar</div></button>
+      <button class="quick-btn" onclick="showIn('profile-screen')"><div class="quick-btn-icon">📊</div><div class="quick-btn-title">Statistika</div><div class="quick-btn-sub">Natijalarim</div></button>
+    </div>
+    <div class="section-title">So'nggi natijalar</div>
+    <div id="recent-list"><div style="color:var(--muted);font-size:14px">Hali natijalar yo'q</div></div>
+  </div>
+  <div class="screen" id="tickets">
+    <div style="padding:16px">
+      <button style="background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;margin-bottom:12px" onclick="showIn('home')">← Orqaga</button>
+      <div style="font-size:22px;font-weight:900;margin-bottom:16px">🎫 Biletlar</div>
+      <div class="tickets-grid" id="tickets-grid"></div>
+    </div>
+  </div>
+  <div class="screen" id="question-screen">
+    <div class="q-header">
+      <button class="q-back" onclick="exitQ()">←</button>
+      <div class="q-info"><div class="q-title" id="q-title">Bilet</div><div class="q-sub" id="q-sub">1/10</div></div>
+      <div class="exam-timer" id="timer" style="display:none">⏱ <span id="timer-val">20:00</span></div>
+    </div>
+    <div class="q-progress-bar"><div class="q-progress-fill" id="q-fill" style="width:10%"></div></div>
+    <div class="q-body">
+      <div class="q-img" id="q-img">🚗</div>
+      <div class="q-text" id="q-text">Savol...</div>
+      <div id="q-answers"></div>
+      <div class="explanation-box" id="q-exp" style="display:none"><strong style="color:var(--yellow)">💡 Izoh:</strong> <span id="q-exp-text"></span></div>
+    </div>
+    <div class="q-footer"><button class="next-btn" id="next-btn" onclick="nextQ()" style="display:none">Keyingi →</button></div>
+  </div>
+  <div class="screen" id="result-screen">
+    <div class="result-icon" id="r-icon">🎉</div>
+    <div class="result-title" id="r-title">Tabriklaymiz!</div>
+    <div class="result-sub" id="r-sub">Siz o'tdingiz!</div>
+    <div class="result-stats">
+      <div class="result-row"><span class="result-row-label">✅ To'g'ri</span><span class="result-row-val" id="r-correct">0</span></div>
+      <div class="result-row"><span class="result-row-label">❌ Noto'g'ri</span><span class="result-row-val" id="r-wrong">0</span></div>
+      <div class="result-row"><span class="result-row-label">📈 Natija</span><span class="result-row-val" id="r-pct">0%</span></div>
+    </div>
+    <button class="btn-primary" onclick="retry()">🔄 Qayta</button>
+    <button class="btn-secondary" onclick="showIn('home')">🏠 Bosh sahifa</button>
+  </div>
+  <div class="screen" id="profile-screen">
+    <div class="profile-header">
+      <div class="profile-avatar" id="p-avatar" onclick="adminTap()">👤</div>
+      <div class="profile-name">Foydalanuvchi</div>
+    </div>
+    <div class="pstats">
+      <div class="pstat"><div class="pstat-num" id="p-total">0</div><div class="pstat-label">Imtihon</div></div>
+      <div class="pstat"><div class="pstat-num" id="p-pass">0</div><div class="pstat-label">O'tdi</div></div>
+      <div class="pstat"><div class="pstat-num" id="p-best">0%</div><div class="pstat-label">Eng yaxshi</div></div>
+    </div>
+    <div style="padding:0 0 16px">
+      <div class="menu-item" onclick="changeLang()"><span style="font-size:22px">🌐</span><span class="menu-item-text">Til</span><span class="lang-tag" id="lang-tag">O'z</span></div>
+      <div class="menu-item" onclick="resetProgress()"><span style="font-size:22px">🔄</span><span class="menu-item-text">Progressni tozalash</span><span style="color:var(--muted)">›</span></div>
+      <div class="menu-item" id="admin-btn" style="display:none" onclick="showAdmin()"><span style="font-size:22px">🛡️</span><span class="menu-item-text">Admin panel</span><span style="color:var(--muted)">›</span></div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-btn active" id="nav-home" onclick="showIn('home')"><span class="nav-icon">🏠</span><span>Bosh</span></button>
+    <button class="nav-btn" id="nav-tickets" onclick="showIn('tickets')"><span class="nav-icon">🎫</span><span>Biletlar</span></button>
+    <button class="nav-btn" id="nav-profile" onclick="showIn('profile-screen')"><span class="nav-icon">👤</span><span>Profil</span></button>
+  </div>
+</div>
+</div>
+<script>
+const ADMIN_PASS='admin123';
+let lang='uz',examMode=false,practiceMode=false,ticket=1,qIdx=0,questions=[],answers={},timerInt=null,secs=1200,tapCount=0;
+const save=(k,v)=>localStorage.setItem('prava_'+k,JSON.stringify(v));
+const load=(k,d)=>{try{let v=localStorage.getItem('prava_'+k);return v?JSON.parse(v):d;}catch{return d;}};
+let user=load('user',{lang:'uz',exams:[],streak:0,lastDay:null,isAdmin:false});
+
+function genDB(){
+  const pool=[
+    {q:"Shahar ichida ruxsat etilgan maksimal tezlik?",a:["40 km/s","60 km/s","80 km/s","100 km/s"],c:1,exp:"YHQ 10.2: shahar ichida 60 km/soat."},
+    {q:"'Yo'l bering' belgisi nimani anglatadi?",a:["To'xtash","Boshqalarga ustuvorlik berish","Harakatga ruxsat","Aylanib o'tish"],c:1,exp:"Yo'l bering belgisi: boshqa transport vositalariga o'tish huquqi beriladi."},
+    {q:"Tormozlash yo'li nimaga bog'liq?",a:["Faqat tezlikka","Faqat yo'l holatiga","Tezlik, yo'l va shina holatiga","Haydovchi tajribasiga"],c:2,exp:"Tormozlash yo'li: tezlik, yo'l qoplamasi va shina holatiga bog'liq."},
+    {q:"Belgilanmagan chorrahada qaysi qoida?",a:["Chapdan keluvchiga","O'ngdan keluvchiga","Tezroq o'tish","To'xtab kutish"],c:1,exp:"O'ng qo'l qoidasi: o'ngdan kelayotgan transportga yo'l beriladi."},
+    {q:"Qizil chiroqda haydovchi nima qiladi?",a:["Ehtiyotkorlik bilan o'tadi","To'xtash chizig'ida to'xtaydi","Tezlikni kamaytiradi","Signal beradi"],c:1,exp:"Qizil chiroq: to'xtash chizig'ida to'liq to'xtash majburiy."},
+    {q:"Ko'rish masofasi qancha bo'lganda tuni ko'ra lampasi yoqiladi?",a:["100m dan kam","200m dan kam","300m dan kam","400m dan kam"],c:2,exp:"Ko'rish 300m dan kam bo'lganda tuni ko'ra lampasini yoqish shart."},
+    {q:"Avtomagistralda minimal tezlik?",a:["40 km/s","60 km/s","80 km/s","Yo'q"],c:1,exp:"Avtomagistralda minimal tezlik 60 km/soat."},
+    {q:"Kim xavfsizlik kamarini taqishi shart?",a:["Faqat haydovchi","Old o'rindiq yo'lovchilari","Barcha yo'lovchilar","Ixtiyoriy"],c:2,exp:"Barcha yo'lovchilar harakat vaqtida kamar taqishi shart."},
+    {q:"To'xtash va to'liq to'xtash farqi?",a:["Farq yo'q","To'xtash vaqtinchalik, to'liq to'xtashda haydovchi tashqarida","Ikkalasi bir xil","To'xtash 5 daqiqa"],c:1,exp:"To'xtash: haydovchi yonida. To'liq to'xtash: haydovchi mashinani tark etgan."},
+    {q:"Guvohnomasisiz haydash oqibati?",a:["100k jarima","300k jarima","500k jarima","Musodara va katta jarima"],c:3,exp:"Guvohnomasisiz haydash: avtomobil musodara qilinishi va katta jarima."},
+  ];
+  let db={};
+  for(let t=1;t<=124;t++){
+    db[t]=[];
+    for(let i=0;i<10;i++){
+      let b=pool[(t+i)%pool.length];
+      db[t].push({id:t*10+i,ticket:t,q:`[B${t} S${i+1}] ${b.q}`,a:b.a,c:b.c,exp:b.exp,img:['🚗','🚦','🛑','⚠️','🔄','🚧','🛣️','🏎️','🚌','🚑'][i]});
+    }
+  }
+  return db;
+}
+const DB=genDB();
+
+function init(){
+  if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+  setTimeout(()=>{
+    if(!user.lang){showScreen('lang-screen');}
+    else{lang=user.lang;go();updateStreak();}
+  },1800);
+}
+
+function go(){
+  document.getElementById('main-screen').style.display='flex';
+  showScreen('main-screen');
+  renderTickets();updateHome();updateRecent();
+  if(user.isAdmin)document.getElementById('admin-btn').style.display='flex';
+}
+
+function setLang(l){lang=l;user.lang=l;save('user',user);go();updateStreak();}
+
+function showScreen(id){
+  document.querySelectorAll('#app>.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+}
+
+function showIn(id){
+  document.querySelectorAll('#main-screen>.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  ['home','tickets','profile-screen'].forEach((s,i)=>{
+    document.getElementById(['nav-home','nav-tickets','nav-profile'][i])?.classList[s===id?'add':'remove']('active');
+  });
+  if(id==='profile-screen')updateProfile();
+}
+
+function updateStreak(){
+  const today=new Date().toDateString();
+  if(user.lastDay!==today){
+    const yesterday=new Date(Date.now()-86400000).toDateString();
+    user.streak=(user.lastDay===yesterday)?(user.streak||0)+1:1;
+    user.lastDay=today;save('user',user);
+  }
+  document.getElementById('streak').textContent='🔥 '+user.streak;
+}
+
+function updateHome(){
+  const ex=user.exams||[];
+  document.getElementById('total-n').textContent=ex.length;
+  document.getElementById('best-n').textContent=(ex.length?Math.max(...ex.map(e=>e.pct)):0)+'%';
+}
+
+function updateRecent(){
+  const ex=(user.exams||[]).slice(-5).reverse();
+  const c=document.getElementById('recent-list');
+  if(!ex.length){c.innerHTML='<div style="color:var(--muted);font-size:14px">Hali natijalar yo'q</div>';return;}
+  c.innerHTML=ex.map(e=>`<div class="recent-item"><div><div style="font-size:14px;font-weight:700">${e.mode==='exam'?'Imtihon':('Bilet '+e.t)}</div><div style="font-size:11px;color:var(--muted)">${e.date}</div></div><div class="${e.pct>=70?'score-pass':'score-fail'}">${e.pct}%</div></div>`).join('');
+}
+
+function renderTickets(){
+  const done=new Set((user.exams||[]).filter(e=>e.t&&e.pct>=70).map(e=>e.t));
+  const fail=new Set((user.exams||[]).filter(e=>e.t&&e.pct<70).map(e=>e.t));
+  let h='';
+  for(let i=1;i<=124;i++)h+=`<div class="ticket-cell ${done.has(i)?'done':fail.has(i)?'failed':''}" onclick="startTicket(${i})">${i}</div>`;
+  document.getElementById('tickets-grid').innerHTML=h;
+}
+
+function startTicket(n){ticket=n;examMode=false;practiceMode=false;questions=DB[n];qIdx=0;answers={};loadQ();showIn('question-screen');document.getElementById('timer').style.display='none';clearInterval(timerInt);}
+
+function startExam(){examMode=true;practiceMode=false;let all=[];for(let t=1;t<=124;t++)all=all.concat(DB[t]);questions=all.sort(()=>Math.random()-.5).slice(0,20);qIdx=0;answers={};secs=1200;loadQ();showIn('question-screen');document.getElementById('timer').style.display='flex';startTimer();}
+
+function startPractice(){practiceMode=true;examMode=false;let all=[];for(let t=1;t<=124;t++)all=all.concat(DB[t]);questions=all.sort(()=>Math.random()-.5).slice(0,30);qIdx=0;answers={};loadQ();showIn('question-screen');document.getElementById('timer').style.display='none';clearInterval(timerInt);}
+
+function loadQ(){
+  const q=questions[qIdx];
+  document.getElementById('q-title').textContent=examMode?'Imtihon rejimi':practiceMode?'Mashq':('Bilet '+ticket);
+  document.getElementById('q-sub').textContent=`Savol ${qIdx+1} / ${questions.length}`;
+  document.getElementById('q-img').textContent=q.img;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('q-fill').style.width=((qIdx+1)/questions.length*100)+'%';
+  const letters=['A','B','C','D'];
+  document.getElementById('q-answers').innerHTML=q.a.map((a,i)=>`<button class="answer-btn" onclick="selectA(${i})" id="a${i}"><div class="answer-letter">${letters[i]}</div><div class="answer-text">${a}</div></button>`).join('');
+  document.getElementById('q-exp').style.display='none';
+  document.getElementById('next-btn').style.display='none';
+}
+
+function selectA(idx){
+  if(answers[qIdx]!==undefined)return;
+  answers[qIdx]=idx;
+  const q=questions[qIdx];
+  for(let i=0;i<q.a.length;i++){
+    const b=document.getElementById('a'+i);
+    if(i===q.c)b.classList.add('correct');
+    else if(i===idx)b.classList.add('wrong');
+    b.style.pointerEvents='none';
+  }
+  if(q.exp){document.getElementById('q-exp-text').textContent=q.exp;document.getElementById('q-exp').style.display='block';}
+  const isLast=qIdx===questions.length-1;
+  const nb=document.getElementById('next-btn');
+  nb.textContent=isLast?'🏁 Tugatish':'Keyingi →';
+  nb.style.display='block';
+}
+
+function nextQ(){if(qIdx<questions.length-1){qIdx++;loadQ();}else{finishExam();}}
+
+function exitQ(){clearInterval(timerInt);showIn('home');}
+
+function startTimer(){
+  clearInterval(timerInt);
+  timerInt=setInterval(()=>{
+    secs--;
+    const m=Math.floor(secs/60).toString().padStart(2,'0');
+    const s=(secs%60).toString().padStart(2,'0');
+    document.getElementById('timer-val').textContent=`${m}:${s}`;
+    const el=document.getElementById('timer');
+    secs<=60?el.classList.add('urgent'):el.classList.remove('urgent');
+    if(secs<=0){clearInterval(timerInt);finishExam();}
+  },1000);
+}
+
+function finishExam(){
+  clearInterval(timerInt);
+  let correct=0;
+  questions.forEach((q,i)=>{if(answers[i]===q.c)correct++;});
+  const wrong=questions.length-correct;
+  const pct=Math.round(correct/questions.length*100);
+  const passed=pct>=70;
+  const result={mode:examMode?'exam':practiceMode?'practice':'ticket',t:examMode||practiceMode?null:ticket,correct,wrong,pct,passed,date:new Date().toLocaleDateString()};
+  user.exams=user.exams||[];user.exams.push(result);save('user',user);
+  document.getElementById('r-icon').textContent=passed?'🎉':'😔';
+  document.getElementById('r-title').textContent=passed?'Tabriklaymiz!':'Muvaffaqiyatsiz';
+  document.getElementById('r-sub').textContent=passed?"Siz imtihondan o'tdingiz!":'Qayta urinib ko'ring!';
+  document.getElementById('r-correct').textContent=correct;
+  document.getElementById('r-wrong').textContent=wrong;
+  document.getElementById('r-pct').textContent=pct+'%';
+  showIn('result-screen');updateHome();updateRecent();renderTickets();
+}
+
+function retry(){examMode?startExam():practiceMode?startPractice():startTicket(ticket);}
+
+function updateProfile(){
+  const ex=user.exams||[];
+  const passed=ex.filter(e=>e.passed).length;
+  const best=ex.length?Math.max(...ex.map(e=>e.pct)):0;
+  document.getElementById('p-total').textContent=ex.length;
+  document.getElementById('p-pass').textContent=passed;
+  document.getElementById('p-best').textContent=best+'%';
+  const tags={uz:"O'z",ru:'Ру',en:'En'};
+  document.getElementById('lang-tag').textContent=tags[lang]||"O'z";
+}
+
+function changeLang(){
+  const l=prompt("Tilni kiriting: uz / ru / en");
+  if(['uz','ru','en'].includes(l)){setLang(l);}
+}
+
+function resetProgress(){
+  if(confirm("Barcha natijalar o'chiriladi?")){user.exams=[];save('user',user);updateHome();updateRecent();renderTickets();alert('✅ Tozalandi');}
+}
+
+function adminTap(){
+  tapCount++;
+  if(tapCount>=7){tapCount=0;const p=prompt('Admin paroli:');if(p===ADMIN_PASS){user.isAdmin=true;save('user',user);document.getElementById('admin-btn').style.display='flex';alert('🛡️ Admin faol!');}}
+}
+
+function showAdmin(){
+  const ex=user.exams||[];
+  const passed=ex.filter(e=>e.passed).length;
+  alert(`🛡️ ADMIN PANEL\n\nJami imtihonlar: ${ex.length}\nO'tdi: ${passed}\nO'tish foizi: ${ex.length?Math.round(passed/ex.length*100):0}%\n\nBiletlar: 124`);
+}
+
+init();
+</script>
+</body>
+</html>
